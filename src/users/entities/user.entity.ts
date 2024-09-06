@@ -6,7 +6,7 @@ import { IUser } from '../interfaces/user.interface';
 import { TABLE_NAMES } from '../../common/constants/table-names.constants';
 
 @Entity(TABLE_NAMES.USERS)
-export class User extends BaseEntity implements IUser {
+export class UserEntity extends BaseEntity implements IUser {
   @PrimaryGeneratedColumn('increment')
   id: number;
 

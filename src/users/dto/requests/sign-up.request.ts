@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { LENGTH_CONSTRAINT } from '../../../common/constraints/length.constraints';
 import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
+import { ISignUpRequest } from '../../interfaces/requests/sign-up-request.interface';
 
-export class SignUpRequest {
+export class SignUpRequest implements ISignUpRequest {
   @ApiProperty({
     type: String,
     example: 'example@example.com',

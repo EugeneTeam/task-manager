@@ -71,3 +71,16 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
+## Notes
+- for create new migration use
+```bash
+npm run migration:generate --name=migration_name
+```
+- for run migration use
+```bash
+npm run build
+```
+```bash
+npm run migration:run
+```

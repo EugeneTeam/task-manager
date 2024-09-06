@@ -24,6 +24,10 @@ export class ConfigService {
       username: this._checkKeyAndGetValue('DB_USERNAME'),
       password: this._checkKeyAndGetValue('DB_PASSWORD'),
       database: this._checkKeyAndGetValue('DB_NAME'),
+      entities: ['dist/**/*.entity{.ts,.js}'],
+      migrations: ['dist/src/db/migrations/*{.ts,.js}'],
+      autoLoadEntities: true,
+      synchronize: false,
     };
   }
 
