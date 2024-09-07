@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { configService } from './common/services/config.service';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as basicAuth from 'express-basic-auth';
+import { GlobalExceptionFilter } from './common/filters/exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -26,6 +27,8 @@ async function bootstrap() {
       },
     },
   });
+
+  app.useGlobalFilters(new GlobalExceptionFilter());
 
   await app.listen(configService.getAppPort());
 }

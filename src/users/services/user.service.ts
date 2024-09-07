@@ -1,7 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { ISignUpRequest } from '../interfaces/requests/sign-up-request.interface';
-import { hash } from 'bcrypt';
+import { CustomError } from '../../common/errors/custom.error';
+import { BcryptService } from '../../common/services/bcrypt.service';
 
 @Injectable()
 export class UserService {
@@ -16,12 +17,10 @@ export class UserService {
     const user = await this._userRepository.findOneByEmail(email);
 
     if (user) {
-      // todo move messages
-      throw new BadRequestException('User already exists');
+      throw new CustomError('EmailIsUsed');
     }
 
-    // todo move [10]
-    const passwordHash = await hash(password, 10);
+    const passwordHash = await BcryptService.hash(password);
 
     await this._userRepository.insertOne({
       last_name,
@@ -31,5 +30,32 @@ export class UserService {
     });
 
     return true;
+  }
+
+  public async signIn(
+    password: string,
+    email: string,
+  ): Promise<{ access_token: string; refresh_token: string }> {
+    const userPasswordHash =
+      await this._userRepository.getUserPasswordHashByEmail(email);
+
+    if (!userPasswordHash) {
+      throw new CustomError('UserNotFound');
+    }
+
+    const isValidPassword = await BcryptService.compare(
+      password,
+      userPasswordHash,
+    );
+
+    if (!isValidPassword) {
+      throw new CustomError('InvalidCredential');
+    }
+
+    // todo add logic
+    return {
+      access_token: '',
+      refresh_token: '',
+    };
   }
 }

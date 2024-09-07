@@ -1,11 +1,27 @@
 import { config } from 'dotenv';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { ExtractJwt } from 'passport-jwt';
 
 config({
   path: `./env/.env.${process.env.NODE_ENV || 'development'}`,
 });
 
 export class ConfigService {
+  public jwtAccessTokenConfig() {
+    return {
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken,
+      secretOrKey: this._checkKeyAndGetValue('JWT_SECRET_KEY'),
+    };
+  }
+
+  public jwtRefreshTokenConfig() {
+    return {
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken,
+      secretOrKey: this._checkKeyAndGetValue('JWT_SECRET_KEY'),
+      passReqToCallback: true,
+    };
+  }
+
   public getBasicAuthOptions() {
     return {
       challenge: true,

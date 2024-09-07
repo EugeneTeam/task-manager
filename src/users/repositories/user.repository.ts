@@ -35,10 +35,22 @@ export class UserRepository
       VALUES ('${first_name}', '${last_name}', '${email}', DEFAULT, '${password_hash}')
     `);
   }
+
   @NormalizeInputParams()
   public async findOneByEmail(email: string): Promise<IUser> {
     return this.getItem(
       `SELECT * FROM ${TABLE_NAMES.USERS} WHERE email = '${email}';`,
     );
+  }
+
+  @NormalizeInputParams()
+  public async getUserPasswordHashByEmail(
+    email: string,
+  ): Promise<string | null> {
+    const result = await this._repository.query(
+      `SELECT password_hash FROM ${TABLE_NAMES.USERS} WHERE email = '${email}'`,
+    );
+
+    return result.length ? result.password_hash : null;
   }
 }
