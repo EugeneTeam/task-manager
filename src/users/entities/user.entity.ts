@@ -44,4 +44,11 @@ export class UserEntity extends BaseEntity implements IUser {
     nullable: false,
   })
   password_hash: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+    default: null,
+  })
+  refresh_token: string;
 }

@@ -2,18 +2,21 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-jwt';
 import { configService } from '../../common/services/config.service';
 import { Request } from 'express';
+import { REFRESH_TOKEN_STRATEGY } from '../constants/strategies-names.constant';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
-  'jwt-refresh',
+  REFRESH_TOKEN_STRATEGY,
 ) {
   constructor() {
     super(configService.jwtRefreshTokenConfig());
   }
 
-  // todo add types, removed ANY
+  // todo add type
   public validate(req: Request, payload: any) {
-    const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
+    const refreshToken: string = req.get('refreshToken');
     return { ...payload, refreshToken };
   }
 }

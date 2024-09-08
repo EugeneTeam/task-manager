@@ -10,14 +10,14 @@ export function NormalizeInputParams<R>(fields?: (keyof R)[]) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
-      // todo check
-
-      // if string
-      if (args[0] && typeof args[0] === 'string') {
-        args[0] = replaceSpecialSymbol(args[0]);
+      if (args.length) {
+        args.forEach((arg, index) => {
+          if (typeof arg === 'string') {
+            args[index] = replaceSpecialSymbol(arg);
+          }
+        });
       }
 
-      // if object
       if (args[0] && typeof args[0] === 'object') {
         const params = args[0];
         (fields || Object.keys(params)).forEach((field) => {

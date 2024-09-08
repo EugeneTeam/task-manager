@@ -1,7 +1,7 @@
 import * as argon from 'argon2';
 import { Options } from 'argon2';
 
-export class BcryptService {
+export class ArgonService {
   private static readonly _DEFAULT_OPTIONS: Options = {
     type: argon.argon2i,
     memoryCost: 2 ** 16,

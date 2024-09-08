@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
+  IIdAndPasswordHash,
   IInsertOneUser,
   IUserRepository,
 } from '../interfaces/user-repository.interface';
@@ -23,8 +24,19 @@ export class UserRepository
     super(_repository);
   }
 
+  public async updateRefreshTokenById(
+    id: number,
+    refreshToken: string | null,
+  ): Promise<void> {
+    await this._repository.query(`
+      UPDATE ${TABLE_NAMES.USERS} SET refresh_token = ${
+      typeof refreshToken === 'string' ? `'${refreshToken}'` : `null`
+    } WHERE id = ${id};
+    `);
+  }
+
   @NormalizeInputParams()
-  public async insertOne({
+  public async insert({
     last_name,
     first_name,
     password_hash,
@@ -37,20 +49,18 @@ export class UserRepository
   }
 
   @NormalizeInputParams()
-  public async findOneByEmail(email: string): Promise<IUser> {
+  public async getByEmail(email: string): Promise<IUser> {
     return this.getItem(
       `SELECT * FROM ${TABLE_NAMES.USERS} WHERE email = '${email}';`,
     );
   }
 
   @NormalizeInputParams()
-  public async getUserPasswordHashByEmail(
+  public async getPasswordHashAndIdByEmail(
     email: string,
-  ): Promise<string | null> {
-    const result = await this._repository.query(
-      `SELECT password_hash FROM ${TABLE_NAMES.USERS} WHERE email = '${email}'`,
+  ): Promise<IIdAndPasswordHash | null> {
+    return this.getItem<IIdAndPasswordHash>(
+      `SELECT password_hash, id FROM ${TABLE_NAMES.USERS} WHERE email = '${email}'`,
     );
-
-    return result.length ? result.password_hash : null;
   }
 }

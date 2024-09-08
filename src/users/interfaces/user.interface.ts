@@ -6,4 +6,5 @@ export interface IUser {
   last_name: string;
   email: string;
   status: UserStatusesEnum;
+  refresh_token?: string;
 }

@@ -6,6 +6,7 @@ import { FilesModule } from './files/files.module';
 import { FilesTasksModule } from './files_tasks/files_tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configService } from './common/services/config.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { configService } from './common/services/config.service';
     FilesModule,
     FilesTasksModule,
     TypeOrmModule.forRoot(configService.getTypeORMOptions()),
+    AuthModule,
   ],
 })
 export class AppModule {}

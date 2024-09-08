@@ -1,23 +1,36 @@
 import { config } from 'dotenv';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ExtractJwt } from 'passport-jwt';
+import {
+  refreshTokenExtractorUtil,
+  tokenExtractorUtil,
+} from '../../auth/utils/token-extractor.util';
 
 config({
   path: `./env/.env.${process.env.NODE_ENV || 'development'}`,
 });
 
 export class ConfigService {
+  public jwtSecretTokens() {
+    return {
+      accessSecret: this._checkKeyAndGetValue('JWT_ACCESS_SECRET_KEY'),
+      refreshSecret: this._checkKeyAndGetValue('JWT_REFRESH_SECRET_KEY'),
+    };
+  }
+
+  // todo almost duplicate - jwtRefreshTokenConfig
   public jwtAccessTokenConfig() {
     return {
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken,
-      secretOrKey: this._checkKeyAndGetValue('JWT_SECRET_KEY'),
+      jwtFromRequest: tokenExtractorUtil,
+      ignoreExpiration: false,
+      secretOrKey: this._checkKeyAndGetValue('JWT_ACCESS_SECRET_KEY'),
     };
   }
 
   public jwtRefreshTokenConfig() {
     return {
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken,
-      secretOrKey: this._checkKeyAndGetValue('JWT_SECRET_KEY'),
+      jwtFromRequest: refreshTokenExtractorUtil,
+      secretOrKey: this._checkKeyAndGetValue('JWT_REFRESH_SECRET_KEY'),
       passReqToCallback: true,
     };
   }
@@ -55,7 +68,6 @@ export class ConfigService {
 
   private _checkKeyAndGetValue(key: string, skipError = false): string {
     const value = process.env[key];
-
     if (!value && !skipError) {
       throw new Error(`Unknown env variable ${key}`);
     }

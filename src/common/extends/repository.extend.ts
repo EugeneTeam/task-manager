@@ -1,4 +1,5 @@
 import { Repository } from 'typeorm';
+import { notProvidedType } from '../types/custom.types';
 
 export class RepositoryExtend<RepositoryType, EntityType> {
   readonly _repo: Repository<RepositoryType>;
@@ -7,7 +8,9 @@ export class RepositoryExtend<RepositoryType, EntityType> {
     this._repo = repository;
   }
 
-  protected async getItem(queryString: string): Promise<EntityType | null> {
+  protected async getItem<T = notProvidedType>(
+    queryString: string,
+  ): Promise<T extends notProvidedType ? EntityType | null : T> {
     const result = await this._repo.query(queryString);
 
     return result?.length ? result[0] : null;
