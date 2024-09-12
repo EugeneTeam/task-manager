@@ -1,16 +1,37 @@
 import { config } from 'dotenv';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { ExtractJwt } from 'passport-jwt';
 import {
   refreshTokenExtractorUtil,
   tokenExtractorUtil,
 } from '../../auth/utils/token-extractor.util';
+import { ValidationPipeOptions } from '@nestjs/common/pipes/validation.pipe';
 
 config({
   path: `./env/.env.${process.env.NODE_ENV || 'development'}`,
 });
 
 export class ConfigService {
+  public jwtAccessSignOptions() {
+    return {
+      secret: this._checkKeyAndGetValue('JWT_ACCESS_SECRET_KEY'),
+      expiresIn: '15m',
+    };
+  }
+
+  public jwtRefreshSignOption() {
+    return {
+      secret: this._checkKeyAndGetValue('JWT_REFRESH_SECRET_KEY'),
+      expiresIn: '7d',
+    };
+  }
+
+  public getValidatePipeOptions(transform = false): ValidationPipeOptions {
+    return {
+      whitelist: true,
+      transform,
+    };
+  }
+
   public jwtSecretTokens() {
     return {
       accessSecret: this._checkKeyAndGetValue('JWT_ACCESS_SECRET_KEY'),
@@ -18,7 +39,6 @@ export class ConfigService {
     };
   }
 
-  // todo almost duplicate - jwtRefreshTokenConfig
   public jwtAccessTokenConfig() {
     return {
       jwtFromRequest: tokenExtractorUtil,

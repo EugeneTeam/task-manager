@@ -59,7 +59,7 @@ export class AuthService {
 
     const tokens = await this.getTokens(userInfo.id);
 
-    await this.updateRefreshToken(email, tokens.refresh_token);
+    await this.updateRefreshToken(userInfo.id, tokens.refresh_token);
 
     return tokens;
   }
@@ -68,8 +68,10 @@ export class AuthService {
     await this._userRepository.updateRefreshTokenById(userId, null);
   }
 
-  // todo add type
-  async updateRefreshToken(userId: number, refreshToken: string) {
+  public async updateRefreshToken(
+    userId: number,
+    refreshToken: string,
+  ): Promise<void> {
     const hashedRefreshToken = await ArgonService.hash(refreshToken);
     await this._userRepository.updateRefreshTokenById(
       userId,
@@ -78,26 +80,18 @@ export class AuthService {
   }
 
   public async getTokens(userId: number): Promise<ITokens> {
-    const { accessSecret, refreshSecret } = configService.jwtSecretTokens();
-    // todo move config to configService
     const [accessToken, refreshToken] = await Promise.all([
       this._jwtService.signAsync(
         {
           sub: userId,
         },
-        {
-          secret: accessSecret,
-          expiresIn: '15m',
-        },
+        configService.jwtAccessSignOptions(),
       ),
       this._jwtService.signAsync(
         {
           sub: userId,
         },
-        {
-          secret: refreshSecret,
-          expiresIn: '7d',
-        },
+        configService.jwtRefreshSignOption(),
       ),
     ]);
     return {

@@ -4,6 +4,7 @@ import { configService } from '../../common/services/config.service';
 import { Request } from 'express';
 import { REFRESH_TOKEN_STRATEGY } from '../constants/strategies-names.constant';
 import { Injectable } from '@nestjs/common';
+import { IJwtPayload } from '../interfaces/jwt-payload.interface';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -14,8 +15,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     super(configService.jwtRefreshTokenConfig());
   }
 
-  // todo add type
-  public validate(req: Request, payload: any) {
+  public validate(req: Request, payload: IJwtPayload): IJwtPayload {
     const refreshToken: string = req.get('refreshToken');
     return { ...payload, refreshToken };
   }
