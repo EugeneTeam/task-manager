@@ -19,7 +19,7 @@ export class UserRepository
 {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly _repository: Repository<UserEntity>,
+    readonly _repository: Repository<UserEntity>,
   ) {
     super(_repository);
   }
