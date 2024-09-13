@@ -7,6 +7,7 @@ import { ArgonService } from '../../common/services/bcrypt.service';
 import { ITokens } from '../interfaces/tokens.interfaces';
 import { JwtService } from '@nestjs/jwt';
 import { configService } from '../../common/services/config.service';
+import { ISignInRequest } from '../../users/interfaces/requests/sign-in-request.interface';
 
 @Injectable()
 export class AuthService {
@@ -40,7 +41,7 @@ export class AuthService {
     return true;
   }
 
-  public async signIn({ email, password }): Promise<ITokens> {
+  public async signIn({ email, password }: ISignInRequest): Promise<ITokens> {
     const userInfo = await this._userRepository.getPasswordHashAndIdByEmail(
       email,
     );

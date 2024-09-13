@@ -5,6 +5,7 @@ import { getRandomValue } from '../utils/get-random-value.util';
 import { mainModule, MainModule } from '../main-module';
 import { UserRepository } from '../../src/users/repositories/user.repository';
 import { UserEntity } from '../../src/users/entities/user.entity';
+import { ArgonService } from '../../src/common/services/bcrypt.service';
 
 type insertUserType = {
   email?: string;
@@ -12,7 +13,7 @@ type insertUserType = {
   first_name?: string;
   status?: UserStatusesEnum;
   refresh_token?: string;
-  password_hash?: string;
+  password?: string;
   created_at?: Date;
   updated_at?: Date;
 };
@@ -21,7 +22,7 @@ export class UserFactory {
   public async insertUser({
     email = faker.internet.email(),
     refresh_token = '',
-    password_hash = '',
+    password = '',
     last_name = faker.person.firstName(),
     first_name = faker.person.lastName(),
     status = UserStatusesEnum.active,
@@ -36,7 +37,7 @@ export class UserFactory {
       last_name,
       first_name,
       email,
-      password_hash,
+      password_hash: await ArgonService.hash(password),
       refresh_token,
       status,
       created_at,

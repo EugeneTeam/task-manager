@@ -4,9 +4,9 @@ import { CodesError } from './codes.error';
 type ErrorCodesType = keyof typeof CodesError;
 
 export class CustomError extends Error {
-  private readonly status: HttpStatus;
-  private readonly code: string;
-  private readonly isCustomError = true;
+  readonly status: HttpStatus;
+  readonly code: string;
+  readonly isCustomError = true;
 
   constructor(errorCode: ErrorCodesType) {
     const error = CodesError[errorCode];

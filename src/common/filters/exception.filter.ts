@@ -26,7 +26,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         data: null,
       });
     } else {
-      this._logger.error(exception.message);
+      if (process.env.NODE_ENV !== 'test') {
+        this._logger.error(exception.message);
+      }
       const status =
         exception instanceof HttpException
           ? exception.getStatus()

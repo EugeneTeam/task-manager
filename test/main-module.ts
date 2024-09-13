@@ -1,6 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
+import { DbUtils } from './utils/db.utils';
+import { GlobalExceptionFilter } from '../src/common/filters/exception.filter';
 
 export class MainModule {
   private app: INestApplication;
@@ -9,9 +11,13 @@ export class MainModule {
   private async _createAppModule(): Promise<void> {
     this.module = await Test.createTestingModule({
       imports: [AppModule],
+      providers: [DbUtils],
     }).compile();
 
     this.app = this.module.createNestApplication();
+
+    this.app.useGlobalFilters(new GlobalExceptionFilter());
+
     await this.app.init();
   }
 

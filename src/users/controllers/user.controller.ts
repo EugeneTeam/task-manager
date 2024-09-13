@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Post,
   Req,
   UseGuards,
@@ -17,9 +19,9 @@ import { AuthService } from '../../auth/services/auth.service';
 import { RefreshTokenGuard } from '../../auth/guards/refresh-token.guard';
 import { TokensDto } from '../dto/responses/tokens.dto';
 import { configService } from '../../common/services/config.service';
+import { SignInRequest } from '../dto/requests/sign-in.request';
 
 @DefaultDoc(USER_ROUTING.MAIN, { showError401: false })
-@UsePipes(new ValidationPipe(configService.getValidatePipeOptions()))
 @Controller(USER_ROUTING.MAIN)
 export class UsersController {
   constructor(private readonly _authService: AuthService) {}
@@ -29,14 +31,16 @@ export class UsersController {
     description: 'Sign in',
   })
   @ApiBody({
-    type: TokensDto,
+    type: SignInRequest,
   })
   @ApiOkResponse({
     type: TokensDto,
   })
+  @UsePipes(new ValidationPipe(configService.getValidatePipeOptions()))
+  @HttpCode(HttpStatus.OK)
   @Post(USER_ROUTING.SIGN_IN)
-  public async authorization(@Body() { email, password }): Promise<TokensDto> {
-    return this._authService.signIn({ email, password });
+  public async authorization(@Body() body: SignInRequest): Promise<TokensDto> {
+    return this._authService.signIn(body);
   }
 
   @ApiOperation({
@@ -44,12 +48,18 @@ export class UsersController {
     description: 'Refresh user access token',
   })
   @UseGuards(RefreshTokenGuard)
+  @ApiOkResponse({
+    type: StatusResponse,
+  })
   @Get(`${USER_ROUTING.TOKEN.MAIN}${USER_ROUTING.TOKEN.REFRESH}`)
   public async refreshTokens(@Req() req: Request) {
-    return this._authService.updateRefreshToken(
+    await this._authService.updateRefreshToken(
       req?.['user']['s?.ub'],
       req?.['headers']?.['refreshtoken'],
     );
+    return {
+      status: true,
+    };
   }
 
   @ApiOperation({
